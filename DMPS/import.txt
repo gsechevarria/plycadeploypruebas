@@ -1,0 +1,45 @@
+INICIALIZACION BASES DE DATOS PLYCA (ORACLE)
+============================================
+
+Para la creación de las bases de datos necesarias para un nuevo entorno de PLYCA, en esta
+carpeta se encuentran los volvados de los esquemas de base de datos necesarios en dos versiones:
+* Para oracle 19c: o19*
+* Para oracle 11: ayalco*
+
+
+
+Importación con IMPDP (DATAPUMP). Ejemplo de creacion de usuarios e importacion
+================================
+create user "PLYCAFIRMA" identified by teleper2022 default tablespace USERS;
+grant connect,resource, create view, create sequence to "PLYCAFIRMA";
+alter user "PLYCAFIRMA" quota unlimited on users;
+
+create user "PLYCASHARK" identified by teleper2022 default tablespace USERS;
+grant connect,resource, create view, create sequence to "PLYCASHARK";
+alter user "PLYCASHARK" quota unlimited on users;
+
+create user "PLYCAPORTAL" identified by teleper2022 default tablespace USERS;
+grant connect,resource, create view, create sequence to "PLYCAPORTAL";
+alter user "PLYCAPORTAL" quota unlimited on users;
+
+create user "PLYCA" identified by teleper default tablespace USERS;
+grant connect,resource,create table,create view,create materialized view,create sequence,create type, create job to plyca;
+grant CREATE JOB, MANAGE SCHEDULER TO PLYCA;
+alter user "PLYCA" quota unlimited on users;
+
+GRANT SELECT ON sys.dba_pending_transactions TO PLYCA;
+GRANT SELECT ON sys.pending_trans$ TO PLYCA;
+GRANT SELECT ON sys.dba_2pc_pending TO PLYCA;
+GRANT FORCE ANY TRANSACTION TO PLYCA;
+GRANT EXECUTE ON sys.dbms_xa TO PLYCA ; 
+
+Ejemplo de importacion 
+Se supone que se ha creado el directorio EXPORT en un path accesible por oracle y que estan ahi los ficheros dmp 
+
+imp plyca/teleper2022 FULL=y file=plyca.dmp
+imp plycafirma/teleper2022 FULL=y file=plycafirma.dmp
+imp plycaportal/teleper2022 FULL=y file=plycaportal.dmp
+imp plycashark/teleper2022 FULL=y file=plycashark.dmp
+
+
+

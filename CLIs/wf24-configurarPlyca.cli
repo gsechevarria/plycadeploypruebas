@@ -1,0 +1,202 @@
+# Instalacion de Plyca Expedientes, para WildFly
+connect
+batch
+
+#Add el driver de oracle 
+#
+#/subsystem=datasources/jdbc-driver=oracle:add(driver-name="oracle",driver-module-name="oracle.driver",driver-class-name=oracle.jdbc.driver.OracleDriver)
+ 
+# Add XA datasource plycaEXPEDIENTES-xa
+#/subsystem=datasources/xa-data-source=plycaEXPEDIENTES-xa:remove
+xa-data-source add \
+    --name=plycaEXPEDIENTES-xa \
+    --driver-name=oracle \
+    --jndi-name=java:jboss/jdbc/plycaDS \
+    --user-name=plyca \
+    --password=plyca \
+    --min-pool-size=5 \
+    --max-pool-size=50 \
+    --xa-datasource-class=oracle.jdbc.xa.client.OracleXADataSource \
+    --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker \
+    --stale-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleStaleConnectionChecker \
+    --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter \
+    --xa-datasource-properties={URL="jdbc:oracle:thin:@localhost:1521:XE"} 
+xa-data-source enable --name=plycaEXPEDIENTES-xa
+
+# Add XA datasource plycaCACHE-xa
+#/subsystem=datasources/xa-data-source=plycaCACHE-xa:remove
+xa-data-source add \
+    --name=plycaCACHE-xa \
+    --driver-name=oracle \
+    --jndi-name=java:jboss/jdbc/ehCache \
+    --user-name=plyca \
+    --password=plyca \
+    --min-pool-size=2 \
+    --max-pool-size=20 \
+    --xa-datasource-class=oracle.jdbc.xa.client.OracleXADataSource \
+    --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker \
+    --stale-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleStaleConnectionChecker \
+    --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter \
+    --xa-datasource-properties={URL="jdbc:oracle:thin:@localhost:1521:XE"} 
+xa-data-source enable --name=plycaCACHE-xa
+
+# Add datasource plycaNTX
+#/subsystem=datasources/data-source=plycaNTX:remove
+data-source add \
+    --name=plycaNTX \
+    --driver-name=oracle \
+    --jndi-name=java:jboss/jdbc/plycaDS-MINT-AALL \
+    --user-name=plyca \
+    --password=plyca \
+    --min-pool-size=5 \
+    --max-pool-size=50 \
+    --jta="true" \
+    --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker \
+    --stale-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleStaleConnectionChecker \
+    --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter \
+    --connection-url="jdbc:oracle:thin:@localhost:1521:XE" 
+data-source enable --name=plycaNTX
+
+data-source add \
+    --name=plycaFIRMA \
+    --driver-name="oracle" \
+    --jndi-name="java:jboss/jdbc/PLYCAFirmaDS" \
+    --user-name="plycafirma" \
+    --password="plycafirma" \
+    --min-pool-size="2" \
+    --max-pool-size="20" \
+    --jta="true" \
+    --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker \
+    --stale-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleStaleConnectionChecker \
+    --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter \
+    --connection-url="jdbc:oracle:thin:@localhost:1521:XE" 
+data-source enable --name=plycaFIRMA
+
+data-source add \
+    --name=plycaFIRMARL \
+    --driver-name="oracle" \
+    --jndi-name="java:jboss/jdbc/plycaDSRL" \
+    --user-name="plycafirma" \
+    --password="plycafirma" \
+    --min-pool-size="2" \
+    --max-pool-size="20" \
+    --jta="true" \
+    --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker \
+    --stale-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleStaleConnectionChecker \
+    --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter \
+    --connection-url="jdbc:oracle:thin:@localhost:1521:XE" 
+data-source enable --name=plycaFIRMARL
+
+data-source add \
+    --name=plycaSHARK \
+    --driver-name="oracle" \
+    --jndi-name="java:jboss/jdbc/sharkDS" \
+    --user-name="plycashark" \
+    --password="plycashark" \
+    --min-pool-size="5" \
+    --max-pool-size="50" \
+    --jta="true" \
+    --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker \
+    --stale-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleStaleConnectionChecker \
+    --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter \
+    --connection-url="jdbc:oracle:thin:@localhost:1521:XE" 
+data-source enable --name=plycaSHARK
+
+data-source add \
+    --name=plycaCATALOGOS \
+    --driver-name="oracle" \
+    --jndi-name="java:jboss/jdbc/plycaDS-MCAT-AALL" \
+    --user-name="plyca" \
+    --password="plyca" \
+    --min-pool-size="1" \
+    --max-pool-size="10" \
+    --jta="true" \
+    --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker \
+    --stale-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleStaleConnectionChecker \
+    --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter \
+    --connection-url="jdbc:oracle:thin:@localhost:1521:XE" 
+data-source enable --name=plycaCATALOGOS
+
+# Configurar  variables JNDI
+/system-property=plyca.jboss.jndi.jaas-prefix:add(value="")
+/system-property=plyca.jboss.jndi.prefix:add(value=java\:jboss\/ )
+/system-property=com.sun.jersey.server.impl.cdi.lookupExtensionInBeanManager:add(value="true" )
+
+/system-property="spring.http.multipart.max-file-size":add(value="105100100KB")
+/system-property="spring.http.multipart.max-request-size":add(value="105100100KB")
+
+# Dominios de seguridad de acceso al aplicativo de expedientes y de firma
+#/subsystem=security/security-domain=plycaJAAS:remove
+/subsystem=security/security-domain=plycaJAAS:add(cache-type=default)
+/subsystem=security/security-domain=plycaJAAS/authentication=classic:add( login-modules=[ { "code" => "com.nexusit.framework.comunica.logica.PlycaBDLoginModule", "flag" => "required" } ])
+
+/subsystem=security/security-domain=plycaFirmaJAAS:add(cache-type=default)
+/subsystem=security/security-domain=plycaFirmaJAAS/authentication=classic:add( login-modules=[ { "code" => "com.nexusit.plycafirma.servlet.PlycaFirmaLoginModule", "flag" => "required" } ]) 
+
+#Ruta de ficheros
+/subsystem=naming/binding=java\:jboss\/url\/RUTA_FICHEROS:add(value="UsarConfigBBDD",binding-type=simple) 
+
+#Colas de mensajeria
+jms-queue add --queue-address=PORTAL_out --entries=java:/jms/notificacion/PORTAL/out --durable=true
+jms-queue add --queue-address=PORTAL_in --entries=java:/jms/notificacion/PORTAL/in --durable=true
+jms-queue add --queue-address=MAIL_in --entries=java:/jms/notificacion/MAIL/in --durable=true
+jms-queue add --queue-address=MAIL_out --entries=java:/jms/notificacion/MAIL/out --durable=true
+jms-queue add --queue-address=EXPORT_in --entries=java:/jms/notificacion/EXPORT/in --durable=true
+jms-queue add --queue-address=EXPORT_out --entries=java:/jms/notificacion/EXPORT/out --durable=true
+jms-queue add --queue-address=PLACE_out --entries=java:/jms/notificacion/PLACE/out --durable=true
+jms-queue add --queue-address=REGISTRO_out --entries=java:/jms/notificacion/REGISTRO/out --durable=true
+jms-queue add --queue-address=PLYCANOTIF_out --entries=java:/jms/notificacion/PLYCANOTIF/out --durable=true
+jms-queue add --queue-address=ColaPDF --entries=java:/jms/ConversorPDF --durable=true
+jms-queue add --queue-address=TareasAUTO --entries=java:/jms/tareasAutomaticas --durable=true
+jms-queue add --queue-address=RECO         --entries=java:/jms/notificacion/RECO/out --durable=true
+jms-queue add --queue-address=IntegracionPortafirmasQueue --entries=java:/jms/IntegracionPortafirmasQueue --durable=true 
+jms-queue add --queue-address=GENERICA_out --entries=java:/jms/notificacion/GENERICA/out --durable=true 
+jms-queue add --queue-address=PasoAutoQueue --entries=java:/jms/PasoAutoQueue --durable=true 
+# SOlo AYMAD jms-queue add --queue-address=LIRE         --entries=java:/jms/notificacion/LIRE/out --durable=true
+
+################################################
+# Solo para WILDFLY y JBOSS 7.2
+# JMS connection Factories
+################################################
+#/subsystem=messaging-activemq/server=default/connection-factory=PlycaConnectionFactory:add(connectors=["in-vm"], #entries=["java:jboss/ConnectionFactory"])
+/subsystem=messaging-activemq/server=default/connection-factory=PlycaConnectionFactory:add(connectors=["in-vm"], entries=["java:jboss/ConnectionFactory"])
+/subsystem=messaging-activemq/server=default/pooled-connection-factory=PlycaConnectionFactoryMDB:add(connectors=["in-vm"], entries=["java:/PlycaConnectionFactoryMDB"])
+################################################
+# Solo para JBOSS 7.3
+# JMS connection Factories
+################################################
+#/subsystem=messaging/hornetq-server=default/pooled-connection-factory=PlycaConnectionFactoryMDB:add(connector={"in-vm" => "xyz"}, entries=["java:/PlycaConnectionFactoryMDB"])
+#/subsystem=messaging/hornetq-server=default/connection-factory=PlycaConnectionFactory:add(connector={"in-vm" => "xyz"}, entries=["java:jboss/ConnectionFactory"])
+
+# Crear el servidor de correo
+/subsystem=mail/mail-session=Mail:add(jndi-name=java:/Mail, from="no-reply@plyca.es")
+/subsystem=mail/mail-session=Mail/server=smtp:add(outbound-socket-binding-ref=mail-smtp)
+/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=mail-smtp/:write-attribute(name="host",value="localhost")
+/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=mail-smtp/:write-attribute(name="port",value="25")
+
+# logs
+/subsystem=logging/logger="org.jboss.jca.core.connectionmanager.listener.TxConnectionListener":add(level=WARN)
+/subsystem=logging/logger="[MONITOR_TRANSACCIONES]":add(level=WARN)     
+/subsystem=logging/logger="[Shark]":add(level=WARN)    
+/subsystem=logging/logger="[stdout]":add(level=WARN)      
+
+
+################################################
+# Solo para WILDFLY y JBOSS 7.2
+# Crear conector ajp
+################################################
+/subsystem=undertow/server=default-server:read-children-names(child-type=ajp-listener)
+/subsystem=undertow/server=default-server/ajp-listener=*:read-resource(recursive=true)
+/subsystem=undertow/server=default-server/ajp-listener=ajp-listener:add(socket-binding=ajp)
+
+################################################
+# Solo para JBOSS 6
+# Crear conector ajp
+################################################
+#/socket-binding-group=standard-sockets/socket-binding=ajp:add(port=8009)
+#/subsystem=web/connector=ajp:add(socket-binding=ajp, protocol="AJP/1.3", enabled=true, scheme="http")
+
+
+# Execute and reload
+run-batch
+:reload

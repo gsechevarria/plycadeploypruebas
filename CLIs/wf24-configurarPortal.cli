@@ -1,0 +1,107 @@
+# Instalacion de Plyca Portal, para WildFly
+connect
+batch
+
+#Add el driver de oracle
+#/subsystem=datasources/jdbc-driver=oracle:add(driver-name="oracle",driver-module-name="oracle.driver",driver-class-name=oracle.jdbc.driver.OracleDriver)
+
+data-source add \
+    --name=plycaPORTAL \
+    --driver-name="oracle" \
+    --jndi-name="java:jboss/jdbc/licitacion" \
+    --user-name="plycaportal" \
+    --password="plycaportal" \
+    --min-pool-size="1" \
+    --max-pool-size="50" \
+    --jta="true" \
+    --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker \
+    --stale-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleStaleConnectionChecker \
+    --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter \
+    --connection-url="jdbc:oracle:thin:@localhost:1521:XE" 
+data-source enable --name=plycaPORTAL
+
+data-source add \
+    --name=plycaREGISTRO \
+    --driver-name="oracle" \
+    --jndi-name="java:jboss/jdbc/registerPlugin" \
+    --user-name="plycaportal" \
+    --password="plycaportal" \
+    --min-pool-size="1" \
+    --max-pool-size="50" \
+    --jta="true" \
+    --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleValidConnectionChecker \
+    --stale-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleStaleConnectionChecker \
+    --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.oracle.OracleExceptionSorter \
+    --connection-url="jdbc:oracle:thin:@localhost:1521:XE" 
+data-source enable --name=plycaREGISTRO
+
+# Configurar  variables JNDI (son las mismas que se configuran en Plyca, por eso estan comentadas)
+#/system-property=plyca.jboss.jndi.jaas-prefix:add(value="")
+#/system-property=plyca.jboss.jndi.prefix:add(value=java\:jboss\/ )
+#/system-property=com.sun.jersey.server.impl.cdi.lookupExtensionInBeanManager:add(value="true" )
+
+# Dominios de seguridad de acceso al aplicativo de portal
+/subsystem=security/security-domain=portal-domain:add(cache-type=default)
+/subsystem=security/security-domain=portal-domain/authentication=classic:add( \
+    login-modules=[ \
+        { \
+          "code" => "es.map.portal.exo.security.jaas.logic.ExoCertLoginModule", \
+          "flag" => "required" \
+        } \
+    ])
+	
+/subsystem=security/security-domain=portal-domain-ws-pwd:add(cache-type=default)
+/subsystem=security/security-domain=portal-domain-ws-pwd/authentication=classic:add( \
+    login-modules=[ \
+        { \
+          "code" => "es.map.portal.exo.security.jaas.logic.WSPwdLoginModule", \
+          "flag" => "required" \
+        } \
+    ])
+	
+/subsystem=security/security-domain=portal-domain-ws-cert:add(cache-type=default)
+/subsystem=security/security-domain=portal-domain-ws-cert/authentication=classic:add( \
+    login-modules=[ \
+        { \
+          "code" => "es.map.portal.exo.security.jaas.logic.WSCertLoginModule", \
+          "flag" => "required" \
+        } \
+    ])
+	
+/subsystem=security/security-domain=loginUsuario:add(cache-type=default)
+/subsystem=security/security-domain=loginUsuario/authentication=classic:add( \
+    login-modules=[ \
+        { \
+          "code" => "es.map.portal.exo.security.jaas.logic.LoginUsrPwdModule", \
+          "flag" => "required" \
+        } \
+    ])
+#para portal con autofirma
+/subsystem=security/security-domain=portal-afirma-domain:add(cache-type=default)
+/subsystem=security/security-domain=portal-afirma-domain/authentication=classic:add( \
+    login-modules=[ \
+        { \
+		  "name" => "portal-afirma", \
+          "code" => "es.map.portal.exo.security.jaas.logic.AfirmaLoginModule", \
+          "flag" => "required" \
+        } \
+    ])
+#Para decodificar los parametros de la URL
+/system-property=org.apache.catalina.connector.URI_ENCODING:add(value="UTF-8")
+
+#Configurar variables JNDI de REGISTRO
+/subsystem=naming/binding=java\:jboss\/config\/REGISTRO_SERVERNAME:add(value="localhost",binding-type=simple)
+/subsystem=naming/binding=java\:jboss\/config\/REGISTRO_USUARIO_PWD:add(value="registro;registro",binding-type=simple)
+
+# Crear el servidor de correo para portal, los socket se crearon en Plyca por eso estan comentados
+/subsystem=mail/mail-session=MailPortal:add(jndi-name=java:jboss/Mail, from="usuario@mail.com")
+/subsystem=mail/mail-session=MailPortal/server=smtp:add(outbound-socket-binding-ref=mail-smtp)
+
+# Si se necesita usuario y clave
+#/subsystem=mail/mail-session=Mail/server=smtp:add(outbound-socket-binding-ref=mail-smtp, username="usuario", password="clave")
+#/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=mail-smtp/:write-attribute(name="host",value="mail.smtp.es")
+#/socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=mail-smtp/:write-attribute(name="port",value="25")
+
+# Execute and reload
+run-batch
+:reload
